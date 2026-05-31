@@ -5,8 +5,10 @@ pyutil -- a library of useful Python functions and classes
 
 Many of these utilities (or their ancestors) were developed originally
 by Zooko Wilcox-O'Hearn for the Mojo Nation, Mnet, Allmydata.com "Mountain View",
-Tahoe-LAFS, or SimpleGeo's products. Please note that version 2.X is based
-on Python 2. Version 3.X only support Python 3.
+Tahoe-LAFS, or SimpleGeo's products. Currently only Python 3 is supported.
+
+Please note that version 2.X is based on Python 2. Both Python 2 and 3 are
+supported until version 3.3.6.
 
 .. image:: https://travis-ci.org/tpltnt/pyutil.svg?branch=master
    :target: https://travis-ci.org/tpltnt/pyutil
