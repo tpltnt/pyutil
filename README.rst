@@ -105,6 +105,13 @@ https://github.com/tpltnt/pyutil/issues
 tests and benchmarks
 ====================
 
+Testing requires ``pytest``, ``twisted``, and ``simplejson``.
+Install them by running ``pip install pytest twisted simplejson``.
+To run tests: ``pytest``.
+
+Testing up to (and including) 3.3.6
+-----------------------------------
+
 Testing requires these dependencies: ``twisted``, ``setuptools_trial``,
 and ``simplejson``. You can install them by running:
 ``pip install twisted setuptools_trial simplejson``.
