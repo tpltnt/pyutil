@@ -1,12 +1,11 @@
 # -*- coding: utf-8; fill-column: 77 -*-
 # -*- indent-tabs-mode: nil -*-
-
-#  This file is part of pyutil; see README.rst for licensing terms.
-
 """
-A few commonly needed functions.
-"""
+A few commonly needed functions for integer power, floor, ceil,
+and nearest multiples; permute and fit slope.
 
+This file is part of pyutil; see README.rst for licensing terms.
+"""
 import math
 
 def div_ceil(n, d):
@@ -28,19 +27,27 @@ def pad_size(n, k):
     """
     if n%k:
         return k - n%k
-    else:
-        return 0
+    return 0
 
 def is_power_of_k(n, k):
+    """
+    Check if a given number (n) is a power of another given number (k).
+    """
     return k**int(math.log(n, k) + 0.5) == n
 
 def next_power_of_k(n, k):
+    """
+    Get the next power of k.
+    """
     p = 1
     while p < n:
         p *= k
     return p
 
 def ave(l):
+    """
+    Get the (arithmetic) average of a given list of numbers.
+    """
     return sum(l) / len(l)
 
 def log_ceil(n, b):
@@ -73,7 +80,7 @@ def linear_fit_slope(ps):
     Single-independent-variable linear regression -- least squares method.
 
     At least, I *think* this function computes that answer.  I no longer
-    remember where I learned this trick and at the moment I can't prove to 
+    remember where I learned this trick and at the moment I can't prove to
     myself that this is correct.
 
     @param ps a sequence of tuples of (x, y)
@@ -105,4 +112,3 @@ def permute(l):
             res.append(l3)
 
     return res
-
