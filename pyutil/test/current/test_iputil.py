@@ -4,8 +4,6 @@
 
 #  This file is part of pyutil; see README.rst for licensing terms.
 
-from __future__ import print_function
-
 try:
     from twisted.trial import unittest
     unittest # http://divmod.org/trac/ticket/1499

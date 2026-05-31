@@ -4,7 +4,6 @@
 
 #  This file is part of pyutil; see README.rst for licensing terms.
 
-from __future__ import print_function
 import os, sys
 import zbase32
 

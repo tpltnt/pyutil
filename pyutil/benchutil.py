@@ -89,8 +89,6 @@ and the main function is to make them be methods of the same object, e.g.:
  this work and send me a patch!
 """
 
-from __future__ import print_function
-
 import cProfile, operator, time
 from decimal import Decimal as D
 import threading as thread

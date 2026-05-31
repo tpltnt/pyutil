@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8-with-signature-unix; fill-column: 77 -*-
 # -*- indent-tabs-mode: nil -*-
-from __future__ import print_function
 import exceptions
 class UsageError(exceptions.Exception): pass
 

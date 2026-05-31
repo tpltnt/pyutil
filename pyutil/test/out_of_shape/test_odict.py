@@ -3,7 +3,6 @@
 # -*- indent-tabs-mode: nil -*-
 
 #  This file is part of pyutil; see README.rst for licensing terms.
-from __future__ import print_function
 import random, unittest
 
 from pyutil.humanreadable import hr

@@ -1,8 +1,6 @@
 # -*- coding: utf-8; fill-column: 77 -*-
 # -*- indent-tabs-mode: nil -*-
 
-from __future__ import print_function
-
 import os, signal, time
 
 from twisted.internet import defer, reactor

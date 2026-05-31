@@ -3,8 +3,6 @@
 
 #  This file is part of pyutil; see README.rst for licensing terms.
 
-from __future__ import print_function
-
 # from the Python Standard Library
 import gc, math, operator, os, sys, types
 try:

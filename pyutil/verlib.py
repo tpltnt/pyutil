@@ -7,11 +7,6 @@ discussion at PyCon 2009.
 
 import re
 
-try:
-    unicode = unicode
-except NameError:
-    basestring = (str, bytes)
-
 class IrrationalVersionError(Exception):
     """This is an irrational version."""
     pass
@@ -101,7 +96,7 @@ class NormalizedVersion(object):
 
     def _parse(self, s, error_on_huge_major_num=True):
         """Parses a string version into parts."""
-        if not isinstance(s, basestring):
+        if not isinstance(s, (str, bytes)):
             raise PreconditionViolationException("s is required to be a string: %s :: %s" % (s, type(s)))
 
         match = VERSION_RE.search(s)
