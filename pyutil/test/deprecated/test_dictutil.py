@@ -79,11 +79,12 @@ class Testy(unittest.TestCase):
         d[fake3] = fake7
         d[3] = 7
         d[3] = 8
-        _assert(any(x for x in d.values() if x == 8))
+        # note: don't fall for the SyntaxWarning. We want 'is' and not '=='
+        _assert(any(x for x in d.values() if x is 8))
         _assert(any(x for x in d.values() if x is fake7))
-        _assert(not any(x for x in d.values() if x == 7)) # The real 7 should have been ejected by the d[3] = 8.
+        _assert(not any(x for x in d.values() if x is 7)) # The real 7 should have been ejected by the d[3] = 8.
         _assert(any(x for x in d if x is fake3))
-        _assert(any(x for x in d if x == 3))
+        _assert(any(x for x in d if x is 3))
         d[fake3] = 8
 
         d.clear()
@@ -92,11 +93,11 @@ class Testy(unittest.TestCase):
         fake7 = EqButNotIs(7)
         d[fake3] = fake7
         d[3] = 8
-        _assert(any(x for x in d.values() if x == 8))
+        _assert(any(x for x in d.values() if x is 8))
         _assert(any(x for x in d.values() if x is fake7))
-        _assert(not any(x for x in d.values() if x == 7)) # The real 7 should have been ejected by the d[3] = 8.
+        _assert(not any(x for x in d.values() if x is 7)) # The real 7 should have been ejected by the d[3] = 8.
         _assert(any(x for x in d if x is fake3))
-        _assert(any(x for x in d if x == 3))
+        _assert(any(x for x in d if x is 3))
         d[fake3] = 8
 
     def test_em(self):
