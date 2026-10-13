@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8-with-signature-unix; fill-column: 77 -*-
 # -*- indent-tabs-mode: nil -*-
-import exceptions
-class UsageError(exceptions.Exception): pass
+class UsageError(Exception): pass
 
 import sys
 from importlib.metadata import version, distribution, PackageNotFoundError
