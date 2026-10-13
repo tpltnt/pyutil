@@ -91,21 +91,17 @@ and the main function is to make them be methods of the same object, e.g.:
 
 import cProfile, operator, time
 from decimal import Decimal as D
-import threading as thread
+import _thread as thread
 
 #from pyutil import jsonutil as json
 
-import platform
-if 'windows' in platform.system().lower():
-    clock = time.clock
-else:
-    clock = time.time
+clock = time.perf_counter
 
 from .assertutil import _assert
 
 def makeg(func):
     def blah(n, func=func):
-        for i in xrange(n):
+        for i in range(n):
             func()
     return blah
 
