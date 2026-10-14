@@ -384,6 +384,39 @@ class Testy(unittest.TestCase):
     def test_em(self):
         self._test_em()
 
+    def test_small_ordered_dict(self):
+        C = odict.SmallOrderedDict
+        for testfunc in (self._test_empty_lookup, self._test_insert_and_remove, self._test_extracted_bound_method, self._test_extracted_unbound_method, self._test_update_from_dict, self._test_setdefault,):
+            testfunc(C())
+        self._test_key_error(C)
+        self._test_unbound_method(C, C())
+
+        d = C({"a": 1, "b": 2, "c": 3}, maxsize=2)
+        self.assertTrue(d._assert_invariants())
+        self.assertEqual(sorted(d.items()), [("b", 2), ("c", 3)])
+        d["d"] = 4
+        self.assertTrue(d._assert_invariants())
+        self.assertEqual(sorted(d.keys()), ["c", "d"])
+
+        # update() with more items than maxsize, then keep using it
+        d = C(maxsize=3)
+        d.update(dict((i, i) for i in range(5)))
+        d[10] = 10
+        self.assertTrue(d._assert_invariants())
+        self.assertEqual(len(d), 3)
+
+        # update() that overflows a partly filled dict
+        d = C({1: 1, 2: 2}, maxsize=3)
+        d.update({3: 3, 4: 4})
+        self.assertTrue(d._assert_invariants())
+        self.assertEqual(sorted(d.keys()), [2, 3, 4])
+
+        d = C({"a": 1})
+        d["b"] = 2
+        self.assertEqual(list(C.ItemIterator(d)), [("a", 1), ("b", 2)])
+        self.assertEqual(list(C.KeyIterator(d)), ["a", "b"])
+        self.assertEqual(list(C.ValueIterator(d)), [1, 2])
+
     def _mem_test_much_adding_some_removing(self):
         for klass in (odict.LRUCache, odict.SmallLRUCache,):
             return self._test_much_adding_some_removing(klass)
