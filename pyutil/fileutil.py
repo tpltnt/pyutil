@@ -174,7 +174,12 @@ class ReopenableNamedTemporaryFile:
         self.shutdown()
 
     def shutdown(self):
-        remove(self.name)
+        # The file may already be gone, e.g. moved into place by
+        # lineutil.lineify_file() or removed by an earlier shutdown().
+        try:
+            remove(self.name)
+        except FileNotFoundError:
+            pass
 
 def make_dirs(dirname, mode=0o777):
     """

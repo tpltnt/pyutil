@@ -35,3 +35,15 @@ class FileUtil(unittest.TestCase):
 
         used = fileutil.du(basedir)
         self.assertEqual(10+11+12+13, used)
+
+    def test_reopenable_tempfile_shutdown_after_move(self):
+        # lineutil.lineify_file() moves the temporary file into place, after
+        # which shutdown() (and __del__) must not fail.
+        import tempfile
+        rntf = fileutil.ReopenableNamedTemporaryFile()
+        dest = os.path.join(tempfile.mkdtemp(), "moved")
+        os.rename(rntf.name, dest)
+        rntf.shutdown()
+        rntf.shutdown()
+        self.assertTrue(os.path.exists(dest))
+        os.remove(dest)

@@ -38,12 +38,15 @@ def recursive_subset_sum(entropy_needed, wordlists):
 def gen_passphrase(entropy, allwords):
     maxlenwords = []
     i = 2 # The smallest set is words of length 1 or 2.
-    words = [x for x in allwords if len(x) <= i]
-    maxlenwords.append((math.log(len(words), 2), words))
-    while len(maxlenwords[-1][1]) < len(allwords):
-        i += 1
+    while True:
         words = [x for x in allwords if len(x) <= i]
-        maxlenwords.append((math.log(len(words), 2), words))
+        # A dictionary need not have words of every length; skip the
+        # empty sets (log2 of 0 is undefined).
+        if words:
+            maxlenwords.append((math.log(len(words), 2), words))
+        if len(words) >= len(allwords):
+            break
+        i += 1
 
     sr = random.SystemRandom()
     passphrase = []
