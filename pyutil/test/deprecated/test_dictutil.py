@@ -107,6 +107,33 @@ class Testy(unittest.TestCase):
                 # print "name of test func: ", helper
                 helper(klass)
 
+    def test_move(self):
+        d1 = {'a': 1, 'b': 2}
+        d2 = {}
+        dictutil.move('a', d1, d2, strict=True)
+        self.assertEqual(d1, {'b': 2})
+        self.assertEqual(d2, {'a': 1})
+        self.assertRaises(KeyError, dictutil.move, 'a', d1, d2, strict=True)
+
+    def test_subtract(self):
+        # d1 bigger than d2
+        self.assertEqual(dictutil.subtract({1: 1, 2: 2, 3: 3}, {2: 0, 4: 0}), {1: 1, 3: 3})
+        # d1 not bigger than d2: deletes from d1 while walking its keys
+        self.assertEqual(dictutil.subtract({1: 1, 2: 2}, {1: 0, 2: 0, 3: 0}), {})
+
+    def test_items_sorted_by_key(self):
+        for klass in (dictutil.UtilDict, dictutil.NumDict,):
+            d = klass({'b': 2, 'a': 1})
+            self.assertEqual(d.items_sorted_by_key(), [('a', 1), ('b', 2)])
+
+    def test_numdict(self):
+        d = dictutil.NumDict()
+        d.inc('a')
+        d.add_num('b', 5)
+        d.add_num('c', 2)
+        self.assertEqual(d.sum(), 8)
+        self.assertEqual(d.item_with_largest_value(), ('b', 5))
+
 def suite():
     suite = unittest.makeSuite(Testy, 'test')
     return suite
