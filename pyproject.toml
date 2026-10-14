@@ -40,7 +40,6 @@ dependencies = ["simplejson>=2.1.0"]
 
 [project.optional-dependencies]
 jsonutil = ['simplejson >= 2.1.0']
-randcookie = ['zbase32 >= 1.0']
 
 [project.entry-points.'console_scripts']
 randcookie = 'pyutil.scripts.randcookie:main'
