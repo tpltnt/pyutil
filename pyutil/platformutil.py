@@ -47,7 +47,7 @@ def get_linux_distro():
         return (_distname, _version)
 
     try:
-        etclsbrel = open("/etc/lsb-release", "rU")
+        etclsbrel = open("/etc/lsb-release")
         for line in etclsbrel:
             m = _distributor_id_file_re.search(line)
             if m:
@@ -62,7 +62,9 @@ def get_linux_distro():
     except EnvironmentError:
             pass
 
-    (_distname, _version) = platform.dist()[:2]
+    # platform.dist() was removed in Python 3.8
+    if hasattr(platform, "dist"):
+        (_distname, _version) = platform.dist()[:2]
     if _distname and _version:
         return (_distname, _version)
 

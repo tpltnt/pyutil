@@ -13,7 +13,7 @@ def main():
     else:
         l = 64
 
-    bl = (l + 7) / 8
+    bl = (l + 7) // 8
 
     s = zbase32.b2a_l(os.urandom(bl), l)
 
