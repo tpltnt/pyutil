@@ -5,6 +5,7 @@
 
 # from the Python Standard Library
 import gc, math, operator, os, sys, types
+from functools import reduce
 try:
     StandardError # PY2
 except NameError:
@@ -29,9 +30,9 @@ def estimate_mem_of_obj(o):
     # assumes 32-bit CPUs...
     PY_STRUCT_HEAD_LEN=4
     if hasattr(o, '__len__'):
-        if isinstance(o, str):
+        if isinstance(o, bytes):
             return PY_STRUCT_HEAD_LEN + o.__len__() * 1
-        if isinstance(o, unicode):
+        if isinstance(o, str):
             return PY_STRUCT_HEAD_LEN + o.__len__() * 4 # 4 depends on implementation and is approximate
         if isinstance(o, (tuple, list,)):
             return PY_STRUCT_HEAD_LEN + o.__len__() * 4
@@ -39,12 +40,6 @@ def estimate_mem_of_obj(o):
             return PY_STRUCT_HEAD_LEN + o.__len__() * 4 * 2 * 2 # approximate
     if isinstance(o, int):
         return PY_STRUCT_HEAD_LEN + 4
-    if isinstance(o, long):
-        return PY_STRUCT_HEAD_LEN + 4
-        if o < 1:
-            return PY_STRUCT_HEAD_LEN
-        else:
-            return PY_STRUCT_HEAD_LEN + math.log(o) / 5 # the 5 was empirically determined (it is approximate)
     if isinstance(o, float):
         return PY_STRUCT_HEAD_LEN + 8
 
@@ -309,7 +304,7 @@ class Measurer(object):
             self._invoke()
             return
 
-        self.d.callback(mathutil.linear_fit_slope(zip(self.resiters, self.resmemusage)))
+        self.d.callback(mathutil.linear_fit_slope(list(zip(self.resiters, self.resmemusage))))
 
 def measure_mem_leakage(f, numsamples=2**7, iterspersample=2**4, *args, **kwargs):
     """
@@ -363,12 +358,12 @@ def describe_object(o, FunctionType=types.FunctionType, MethodType=types.MethodT
     sl = []
     if isinstance(o, FunctionType):
         try:
-            sl.append("<type 'function' %s>" % str(o.func_name))
+            sl.append("<type 'function' %s>" % str(o.__name__))
         except:
             pass
     elif isinstance(o, MethodType):
         try:
-            sl.append("<type 'method' %s>" % str(o.im_func.func_name))
+            sl.append("<type 'method' %s>" % str(o.__func__.__name__))
         except:
             pass
     else:
@@ -385,12 +380,12 @@ def describe_object_with_dict_details(o):
     sl.append(str(type(o)))
     if isinstance(o, types.FunctionType):
         try:
-            sl.append(str(o.func_name))
+            sl.append(str(o.__name__))
         except:
             pass
     elif isinstance(o, types.MethodType):
         try:
-            sl.append(str(o.im_func.func_name))
+            sl.append(str(o.__func__.__name__))
         except:
             pass
     try:
@@ -400,12 +395,12 @@ def describe_object_with_dict_details(o):
     if isinstance(o, dict) and o:
         sl.append('-')
         nd = dictutil.NumDict()
-        for k, v in o.iteritems():
+        for k, v in o.items():
             nd.inc((describe_object(k), describe_object(v),))
         k, v = nd.item_with_largest_value()
         sl.append("-")
-        iterator = o.iteritems()
-        k,v =  iterator.next()
+        iterator = iter(o.items())
+        k,v =  next(iterator)
         sl.append(describe_object(k))
         sl.append(":")
         sl.append(describe_object(v))
@@ -417,7 +412,7 @@ def describe_dict(o):
     sl.append(str(l))
     if l:
         sl.append("-")
-        iterator = o.iteritems()
+        iterator = iter(o.items())
         firstitem=True
         try:
             while True:
@@ -425,7 +420,7 @@ def describe_dict(o):
                     firstitem = False
                 else:
                     sl.append(", ")
-                k,v =  iterator.next()
+                k,v =  next(iterator)
                 sl.append(describe_object(k))
                 sl.append(": ")
                 sl.append(describe_object(v))
@@ -478,7 +473,6 @@ def get_all_objects():
     return objs
 
 def describe_all_objects():
-    import dictutil
     d = dictutil.NumDict()
     for o in get_all_objects():
         d.inc(describe_object(o))
@@ -496,7 +490,7 @@ def dump_description_of_object_refs(o, f):
 
     # First, any __dict__ items
     try:
-        itemsiter = o.__dict__.iteritems()
+        itemsiter = o.__dict__.items()
     except:
         pass
     else:
