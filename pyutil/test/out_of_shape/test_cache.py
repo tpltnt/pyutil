@@ -398,6 +398,35 @@ class Testy(unittest.TestCase):
     def test_em(self):
         self._test_em()
 
+    def test_linked_list_lru_cache(self):
+        klass = cache.LinkedListLRUCache
+        for testfunc in (self._test_empty_lookup, self._test_insert_and_get, self._test_insert_and_remove, self._test_extracted_bound_method, self._test_extracted_unbound_method, self._test_clear, self._test_update, self._test_setdefault,):
+            testfunc(klass())
+        self._test_key_error(klass)
+        self._test_unbound_method(klass, klass())
+        for testfunc in (self._test_LRU_1, self._test_LRU_2, self._test_LRU_3, self._test_LRU_full, self._test_LRU_has_key, self._test_LRU_not_overfull_on_idempotent_add, self._test_LRU_overflow_on_update, self._test_LRU_overflow_on_init,):
+            testfunc(klass)
+
+    def test_iterate_with_for(self):
+        for klass in (cache.LRUCache, cache.SmallLRUCache,):
+            c = klass({"a": 1})
+            self.assertEqual(list(c.iteritems()), [("a", 1,)])
+            self.assertEqual(list(c.iterkeys()), ["a"])
+            self.assertEqual(list(c.itervalues()), [1])
+
+    def test_small_lru_cache_update_overflow(self):
+        # update() with more items than maxsize, then keep using the cache
+        c = cache.SmallLRUCache(maxsize=3)
+        c.update(dict((i, i) for i in range(5)))
+        c[10] = 10
+        self.assertTrue(c._assert_invariants())
+        self.assertEqual(len(c), 3)
+        # update() that overflows an already partly filled cache
+        c = cache.SmallLRUCache({1: 1, 2: 2}, maxsize=3)
+        c.update({3: 3, 4: 4})
+        self.assertTrue(c._assert_invariants())
+        self.assertEqual(sorted(c.keys()), [2, 3, 4])
+
     def _mem_test_LRU_much_adding_some_removing(self):
         for klass in (cache.LRUCache, cache.SmallLRUCache,):
             return self._test_LRU_much_adding_some_removing(klass)

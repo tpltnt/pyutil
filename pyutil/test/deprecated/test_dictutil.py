@@ -10,6 +10,10 @@ from pyutil.assertutil import _assert
 
 from pyutil import dictutil
 
+# The int objects themselves (small ints are cached), so that the tests
+# below compare by identity without a SyntaxWarning for 'is' with a literal.
+THREE, SEVEN, EIGHT = 3, 7, 8
+
 class EqButNotIs:
     def __init__(self, x):
         self.x = x
@@ -79,12 +83,12 @@ class Testy(unittest.TestCase):
         d[fake3] = fake7
         d[3] = 7
         d[3] = 8
-        # note: don't fall for the SyntaxWarning. We want 'is' and not '=='
-        _assert(any(x for x in d.values() if x is 8))
+        # note: we want 'is' and not '=='
+        _assert(any(x for x in d.values() if x is EIGHT))
         _assert(any(x for x in d.values() if x is fake7))
-        _assert(not any(x for x in d.values() if x is 7)) # The real 7 should have been ejected by the d[3] = 8.
+        _assert(not any(x for x in d.values() if x is SEVEN)) # The real 7 should have been ejected by the d[3] = 8.
         _assert(any(x for x in d if x is fake3))
-        _assert(any(x for x in d if x is 3))
+        _assert(any(x for x in d if x is THREE))
         d[fake3] = 8
 
         d.clear()
@@ -93,11 +97,11 @@ class Testy(unittest.TestCase):
         fake7 = EqButNotIs(7)
         d[fake3] = fake7
         d[3] = 8
-        _assert(any(x for x in d.values() if x is 8))
+        _assert(any(x for x in d.values() if x is EIGHT))
         _assert(any(x for x in d.values() if x is fake7))
-        _assert(not any(x for x in d.values() if x is 7)) # The real 7 should have been ejected by the d[3] = 8.
+        _assert(not any(x for x in d.values() if x is SEVEN)) # The real 7 should have been ejected by the d[3] = 8.
         _assert(any(x for x in d if x is fake3))
-        _assert(any(x for x in d if x is 3))
+        _assert(any(x for x in d if x is THREE))
         d[fake3] = 8
 
     def test_em(self):
@@ -106,6 +110,33 @@ class Testy(unittest.TestCase):
             for helper in (self._help_test_empty_dict, self._help_test_nonempty_dict, self._help_test_eq_but_notis,):
                 # print "name of test func: ", helper
                 helper(klass)
+
+    def test_move(self):
+        d1 = {'a': 1, 'b': 2}
+        d2 = {}
+        dictutil.move('a', d1, d2, strict=True)
+        self.assertEqual(d1, {'b': 2})
+        self.assertEqual(d2, {'a': 1})
+        self.assertRaises(KeyError, dictutil.move, 'a', d1, d2, strict=True)
+
+    def test_subtract(self):
+        # d1 bigger than d2
+        self.assertEqual(dictutil.subtract({1: 1, 2: 2, 3: 3}, {2: 0, 4: 0}), {1: 1, 3: 3})
+        # d1 not bigger than d2: deletes from d1 while walking its keys
+        self.assertEqual(dictutil.subtract({1: 1, 2: 2}, {1: 0, 2: 0, 3: 0}), {})
+
+    def test_items_sorted_by_key(self):
+        for klass in (dictutil.UtilDict, dictutil.NumDict,):
+            d = klass({'b': 2, 'a': 1})
+            self.assertEqual(d.items_sorted_by_key(), [('a', 1), ('b', 2)])
+
+    def test_numdict(self):
+        d = dictutil.NumDict()
+        d.inc('a')
+        d.add_num('b', 5)
+        d.add_num('c', 2)
+        self.assertEqual(d.sum(), 8)
+        self.assertEqual(d.item_with_largest_value(), ('b', 5))
 
 def suite():
     suite = unittest.makeSuite(Testy, 'test')

@@ -62,7 +62,9 @@ output_encoding = get_output_encoding()
 argv_encoding = get_argv_encoding()
 
 def type_unicode(argstr):
-    return argstr.decode(argv_encoding)
+    if isinstance(argstr, bytes):
+        return argstr.decode(argv_encoding)
+    return argstr
 
 def main():
     parser = argparse.ArgumentParser(prog="try_decoding", description="Try decoding some bytes with all sorts of different codecs and print out any that decode.")
@@ -78,16 +80,16 @@ def main():
     for codec in listem():
         try:
             u = inb.decode(codec)
-        except (UnicodeDecodeError, IOError, TypeError, IndexError, UnicodeError, ValueError, zlib.error, binascii.Error):
+        except (LookupError, UnicodeDecodeError, IOError, TypeError, IndexError, UnicodeError, ValueError, zlib.error, binascii.Error):
             pass
         else:
-            if isinstance(u, unicode):
+            if isinstance(u, str):
                 if args.target:
                     if args.target != u:
                         continue
                 print("%19s" % codec)
                 print(':')
-                print(u.encode(output_encoding))
+                print(u)
             else:
                 if not args.accept_bytes:
                     continue
